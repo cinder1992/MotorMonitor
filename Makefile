@@ -10,12 +10,12 @@ OPTIMISE := 2
 
 SRCDIR := src
 INCDIR := inc
-SRCS := $(wildcard $(SRCDIR)/*.c)
-PLATSRCS := $(wildcard $(SRCDIR)/platform/$(PLATFORM)/*.c)
-OBJS := $(patsubst $(SRCDIR)/%.c,%.o,$(SRCS))
-OBJS += $(patsubst $(SRCDIR)/platform/$(PLATFORM)/%.c,%.o,$(PLATSRCS))
-ASSRCS := $(wildcard $(SRCDIR)/platform/$(PLATFORM)/*.s)
-ASOBJS := $(patsubst $(SRCDIR)/platform/$(PLATFORM)/%.s,%.s.o,$(ASSRCS))
+PLATDIR := $(SRCDIR)/platform/$(PLATFORM)
+CSRCS := $(wildcard $(SRCDIR)/*.c)
+PLATSRCS := $(wildcard $(PLATDIR)/*.c)
+COBJS := $(patsubst $(SRCDIR)/%.c,%.o,$(CSRCS)) $(patsubst $(PLATDIR)/%.c,%.o,$(PLATSRCS))
+ASSRCS := $(wildcard $(PLATDIR)/*.s)
+ASOBJS := $(patsubst $(PLATDIR)/%.s,%.s.o,$(ASSRCS))
 
 VPATH := $(SRCDIR):$(SRCDIR)/platform/$(PLATFORM)
 
@@ -33,7 +33,7 @@ default: all
 %.s.o: %.s
 	$(AS) -o$@ $<
 
-mm.elf: $(OBJS) $(ASOBJS)
+mm.elf: $(COBJS) $(ASOBJS)
 	$(LD) -o $@ $^ $(LDFLAGS)
 
 mm.bin: mm.elf
