@@ -1,5 +1,5 @@
 #ifndef _MFP_H
-#define _MFP_H
+#define _MFP_H 1
 
 #define MFP_BASE	(char*)0x200000
 //MC68901P Registers

@@ -1,11 +1,6 @@
-#include "stdio.h"
+#include <stdio.h>
 #include "platform/my68k/mfp.h"
 
-void putc(char c) { mfp_putc(c); }
-char getc(void) { return mfp_getc(); }
-void puts(const char* str) {
-	int i = 0;
-	while(str[i] != '\0') {
-		putc(str[i++]);
-	}
-}
+int putchar(int c) { mfp_putc(((unsigned char)c&255)); return 0; }
+int getchar(void) { return (int)mfp_getc(); }
+

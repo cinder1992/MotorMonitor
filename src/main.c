@@ -1,9 +1,9 @@
-#include "stdio.h"
+#include <stdio.h>
 
 void main() {
 	const char str[] = "Hellorld!";
 	puts(str);
 	while(1) {
-		putc(getc());
+		putc(getc(stdin), stdout);
 	}
 }

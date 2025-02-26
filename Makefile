@@ -9,18 +9,23 @@ OBJCOPY := $(TARGET)-objcopy
 OPTIMISE := 2
 
 SRCDIR := src
-INCDIR := inc
+INCDIR := include
+LIBCDIR := $(SRCDIR)/libc
+LIBCINCDIR := $(INCDIR)/libc
 PLATDIR := $(SRCDIR)/platform/$(PLATFORM)
 CSRCS := $(wildcard $(SRCDIR)/*.c)
+LIBCSRCS := $(wildcard $(LIBCDIR)/*.c)
 PLATSRCS := $(wildcard $(PLATDIR)/*.c)
-COBJS := $(patsubst $(SRCDIR)/%.c,%.o,$(CSRCS)) $(patsubst $(PLATDIR)/%.c,%.o,$(PLATSRCS))
+COBJS := $(patsubst $(SRCDIR)/%.c,%.o,$(CSRCS))
+COBJS += $(patsubst $(LIBCDIR)/%.c,%.o,$(LIBCSRCS))
+COBJS += $(patsubst $(PLATDIR)/%.c,%.o,$(PLATSRCS))
 ASSRCS := $(wildcard $(PLATDIR)/*.s)
 ASOBJS := $(patsubst $(PLATDIR)/%.s,%.s.o,$(ASSRCS))
 
-VPATH := $(SRCDIR):$(SRCDIR)/platform/$(PLATFORM)
+VPATH := $(SRCDIR):$(PLATDIR):$(LIBCDIR)
 
 LDFLAGS := -march=68000 -ffreestanding -O$(OPTIMISE) -nostdlib -static-libgcc -lgcc -T $(SRCDIR)/platform/$(PLATFORM)/linker.ld
-CFLAGS := -I$(INCDIR) -march=68010 -std=gnu99 -ffreestanding -O$(OPTIMISE) -Wall -Wextra
+CFLAGS := -I$(INCDIR) -I$(LIBCINCDIR) -march=68010 -std=gnu99 -ffreestanding -O$(OPTIMISE) -Wall -Wextra
 
 
 .PHONY: all clean
