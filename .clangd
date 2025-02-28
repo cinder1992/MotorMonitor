@@ -1,0 +1,5 @@
+CompileFlags:
+    Remove: [-march=68000, -march=68010]
+
+Diagnostics:
+    Suppress: anyx86_interrupt_attribute

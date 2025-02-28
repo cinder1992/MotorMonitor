@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 int fputc(int c, FILE* file) {
-	switch((int)file) {
-		case (int)stdout:
-		case (int)stderr:
+	switch((size_t)file) {
+		case (size_t)stdout:
+		case (size_t)stderr:
 			return putchar((char) c);
 		default:
 			return EOF;
@@ -20,15 +20,20 @@ int fputs(const char* str, FILE* file) {
 }
 
 int puts(const char* str) {
-	if(fputs(str, stdout) == EOF)
+	int rv1 = 0;
+	int rv2 = 0;
+	rv1 = fputs(str, stdout);
+	if(rv1 == EOF)
 		return EOF;
-	if(fputs("\r\n", stdout) == EOF)
+	rv2 = fputs("\r\n", stdout);
+	if(rv2 == EOF)
 		return EOF;
+	return rv1 + rv2;
 }
 
 int fgetc(FILE* file) {
-	switch((int)file) {
-		case (int)stdin:
+	switch((size_t)file) {
+		case (size_t)stdin:
 			return getchar();
 		default:
 			return EOF;
@@ -75,7 +80,7 @@ static int __parse_and_emit(FILE* file, const char* format, int* idx, va_list ar
 }
 
 int vfprintf(FILE* file, const char* format, va_list args) {
-	int rv;
+	int rv = 0;
 	int i = 0;
 	while(format[i] != '\0') {
 		if(format[i] == '%') {
@@ -102,8 +107,9 @@ int fprintf(FILE* file, const char* format, ...) {
 	int rv;
 	va_list vargs;
 	va_start(vargs, format);
-	return vfprintf(file, format, vargs);
+	rv = vfprintf(file, format, vargs);
 	va_end(vargs);
+	return rv;
 }
 
 int printf(const char* format, ...) {

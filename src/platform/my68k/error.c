@@ -3,6 +3,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+void (*userErrorHandlers[16])(void);
+
 typedef struct __attribute__((packed)) {
 	short status;
 	int pc;

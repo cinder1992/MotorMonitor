@@ -33,7 +33,7 @@ inline static int buff_push_nb(ring_buffer_t* b, char c) {
 	return 1;
 }
 
-inline static int buff_pop_nb(ring_buffer_t* b, char* c) {
+inline static int buff_pop_nb(ring_buffer_t* b, volatile char* c) {
 	if(b->ridx == b->widx)
 		return 0; //buffer is empty
 	*c = b->buf[b->ridx];
@@ -65,7 +65,7 @@ void __attribute__((interrupt)) _int_mfp_rx(void) {
 void __attribute__((interrupt)) _int_mfp_cts(void) {
 	//disable cts interrupt before changing MFP_AER
 	mfp[MFP_IERA] &= 0b01111111;
-	if(mfp[MFP_AER] && 0b10000000) { //interrupt triggered by rising edge
+	if(mfp[MFP_AER] & 0b10000000) { //interrupt triggered by rising edge
 		mfp[MFP_AER] &= 0b01111111; // FALLING edge trigger
 		mfp[MFP_IMRA] |= 0b00000100; // unmask TX interrupt
 	} else { //interrupt triggered by falling edge
