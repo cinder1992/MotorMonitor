@@ -1,33 +1,37 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-int fputc(int c, FILE* file) {
+int fputc(int chr, FILE* file) {
 	switch((size_t)file) {
 		case (size_t)stdout:
 		case (size_t)stderr:
-			return putchar((char) c);
+			return putchar((char) chr);
 		default:
 			return EOF;
 	}
 }
 
 int fputs(const char* str, FILE* file) {
-	int i = 0;
-	while(str[i] != '\0')
-		if(fputc(str[i++], file) == EOF)
+	int idx = 0;
+	while(str[idx] != '\0') {
+		if(fputc(str[idx++], file) == EOF) {
 			return EOF;
-	return i;
+		}
+	}
+	return idx;
 }
 
 int puts(const char* str) {
 	int rv1 = 0;
 	int rv2 = 0;
 	rv1 = fputs(str, stdout);
-	if(rv1 == EOF)
+	if(rv1 == EOF) {
 		return EOF;
+	}
 	rv2 = fputs("\r\n", stdout);
-	if(rv2 == EOF)
+	if(rv2 == EOF) {
 		return EOF;
+	}
 	return rv1 + rv2;
 }
 
@@ -40,23 +44,23 @@ int fgetc(FILE* file) {
 	}
 }
 
-static int __fputhex(FILE* file, int var) {
-	int mask = 0xF0000000;
-	const char* h = "123456789ABCDEF";
+static int fputhex(FILE* file, int var) {
+	unsigned int mask = 0xF0000000;
+	const char* hexstr = "123456789ABCDEF";
 	int tmp;
-	int rv = 0;
-	while((var & mask) == 0) mask = mask >> 4;
+	int retv = 0;
+	while((var & mask) == 0) { mask = mask >> 4; }
 	while(mask != 0) {
-		tmp = fputc(h[var & mask], file);
-		if(tmp == EOF) return EOF;
-		rv += tmp;
+		tmp = fputc(hexstr[var & mask], file);
+		if(tmp == EOF) { return EOF; }
+		retv += tmp;
 		mask = mask >> 4;
 	}
-	return rv;
+	return retv;
 }
 
-static int __parse_and_emit(FILE* file, const char* format, int* idx, va_list args) {
-	int rv = 0;
+static int parse_and_emit(FILE* file, const char* format, int* idx, va_list args) {
+	int retv = 0;
 	int tmp;
 	switch(format[*idx]) {
 		case '%':
@@ -69,34 +73,36 @@ static int __parse_and_emit(FILE* file, const char* format, int* idx, va_list ar
 			tmp = fputs(va_arg(args, char*), file);
 			break;
 		case 'x':
-			tmp = __fputhex(file, va_arg(args, int));
+			tmp = fputhex(file, va_arg(args, int));
 			break;
 		default:
 			return EOF;
 	}
-	if(tmp == EOF) return EOF;
-	rv += tmp;
-	return rv;
+	if(tmp == EOF) { return EOF; }
+	retv += tmp;
+	return retv;
 }
 
 int vfprintf(FILE* file, const char* format, va_list args) {
-	int rv = 0;
-	int i = 0;
-	while(format[i] != '\0') {
-		if(format[i] == '%') {
-			i++;
-			int temp = __parse_and_emit(file, format, &i, args);
-			if(temp < 0)
+	int retv = 0;
+	int idx = 0;
+	while(format[idx] != '\0') {
+		if(format[idx] == '%') {
+			idx++;
+			int temp = parse_and_emit(file, format, &idx, args);
+			if(temp < 0) {
 				return temp;
-			rv += temp;
+			}
+			retv += temp;
 		} else {
-			int temp = fputc(format[i++], stdout);
-			if(temp < 0)
+			int temp = fputc(format[idx++], stdout);
+			if(temp < 0) {
 				return temp;
-			rv += temp;
+			}
+			retv += temp;
 		}
 	}
-	return rv;
+	return retv;
 }
 
 int vprintf(const char* format, va_list args) {
@@ -104,19 +110,19 @@ int vprintf(const char* format, va_list args) {
 }
 
 int fprintf(FILE* file, const char* format, ...) {
-	int rv;
+	int retv;
 	va_list vargs;
 	va_start(vargs, format);
-	rv = vfprintf(file, format, vargs);
+	retv = vfprintf(file, format, vargs);
 	va_end(vargs);
-	return rv;
+	return retv;
 }
 
 int printf(const char* format, ...) {
-	int rv;
+	int retv;
 	va_list vargs;
 	va_start(vargs, format);
-	rv = vfprintf(stdout, format, vargs);
+	retv = vfprintf(stdout, format, vargs);
 	va_end(vargs);
-	return rv;
+	return retv;
 }

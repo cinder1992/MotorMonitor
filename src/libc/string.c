@@ -1,6 +1,6 @@
 #include <string.h>
 
-void *memcpy(void *dest, const void *src, size_t num) {
+void *memcpy(void* restrict dest, const void* src, size_t num) {
 	// Cast src and dst to unsigned char *
 	unsigned char *dest_c = (unsigned char*)dest;
 	unsigned char *src_c = (unsigned char*)src;
@@ -12,7 +12,7 @@ void *memcpy(void *dest, const void *src, size_t num) {
 	return dest;
 }
 
-void *memset(void *dest, int val, size_t num) {
+void *memset(void* dest, int val, size_t num) {
 	unsigned char *dest_c = (unsigned char *)dest;
 
 	for(size_t i = 0; i < num; i++) {
@@ -21,7 +21,7 @@ void *memset(void *dest, int val, size_t num) {
 	return dest;
 }
 
-void *memmove(void *dest, const void *src, size_t num) {
+void *memmove(void* dest, const void* src, size_t num) {
 	unsigned char *dest_c = (unsigned char *)dest;
 	unsigned char *src_c = (unsigned char *)src;
 	
@@ -35,9 +35,9 @@ void *memmove(void *dest, const void *src, size_t num) {
 	return dest;
 }
 
-int memcmp(const void *a, const void *b, size_t num) {
-	const unsigned char *a_c = (const unsigned char *)a;
-	const unsigned char *b_c = (const unsigned char *)b;
+int memcmp(const void *aptr, const void *bptr, size_t num) {
+	const unsigned char *a_c = (const unsigned char *)aptr;
+	const unsigned char *b_c = (const unsigned char *)bptr;
 	for(size_t i = 0; i < num; i++) {
 		if (a_c[i] != b_c[i]) {
 			return a_c[i] < b_c[i] ? -1 : 1;

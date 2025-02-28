@@ -10,7 +10,7 @@
 #define EOF -1 //Futureproofing
 #define stdin (FILE*)0
 #define stdout (FILE*)1
-#define stderr (FILE*)-1
+#define stderr (FILE*)2
 #define getc(Z) fgetc(Z)
 #define putc(X,Y) fputc(X,Y)
 

@@ -1,68 +1,73 @@
 #include <stddef.h>
 #include "platform/my68k/mfp.h"
 
-static volatile char* mfp = MFP_BASE;
+#define MAX_BUF_SIZE 16
+
+static volatile unsigned char* mfp = MFP_BASE;
 
 typedef struct ring_buffer_s {
-	char buf[16];
+	unsigned char buf[MAX_BUF_SIZE];
 	volatile int ridx;
 	volatile int widx;
 } ring_buffer_t;
 
 ring_buffer_t txbuf, rxbuf;
 
-inline static void buff_push(ring_buffer_t* b, char c) {
-	while((b->widx + 1) % 16 == b->ridx); //Wait for a space in the buffer
-	b->buf[b->widx] = c;
-	b->widx = (b->widx + 1) % 16 ;
+inline static void buff_push(ring_buffer_t* bptr, char chr) {
+	while((bptr->widx + 1) % MAX_BUF_SIZE == bptr->ridx){} //Wait for a space in the buffer
+	bptr->buf[bptr->widx] = chr;
+	bptr->widx = (bptr->widx + 1) % MAX_BUF_SIZE ;
 }
 
-inline static unsigned char buff_pop(ring_buffer_t* b) {
+inline static unsigned char buff_pop(ring_buffer_t* bptr) {
 	unsigned char tmp;
-	while(b->ridx == b->widx); //wait for a character to arrive
-	tmp = b->buf[b->ridx];
-	b->ridx = (b->ridx + 1) % 16;
+	while(bptr->ridx == bptr->widx){} //wait for a character to arrive
+	tmp = bptr->buf[bptr->ridx];
+	bptr->ridx = (bptr->ridx + 1) % MAX_BUF_SIZE;
 	return tmp;
 }
 
-inline static int buff_push_nb(ring_buffer_t* b, char c) {
-	if((b->widx + 1) % 16 == b->ridx)
+inline static int buff_push_nb(ring_buffer_t* bptr, unsigned char chr) {
+	if((bptr->widx + 1) % MAX_BUF_SIZE == bptr->ridx) {
 		return 0; //buffer is full
-	b->buf[b->widx] = c;
-	b->widx = (b->widx + 1) % 16;
+	}
+	bptr->buf[bptr->widx] = chr;
+	bptr->widx = (bptr->widx + 1) % MAX_BUF_SIZE;
 	return 1;
 }
 
-inline static int buff_pop_nb(ring_buffer_t* b, volatile char* c) {
-	if(b->ridx == b->widx)
+inline static int buff_pop_nb(ring_buffer_t* bptr, volatile unsigned char* chr) {
+	if(bptr->ridx == bptr->widx) {
 		return 0; //buffer is empty
-	*c = b->buf[b->ridx];
-	b->ridx = (b->ridx + 1) % 16;
+	}
+	*chr = bptr->buf[bptr->ridx];
+	bptr->ridx = (bptr->ridx + 1) % MAX_BUF_SIZE;
 	return 1;
 }
 
-inline static int buff_full(ring_buffer_t* b) {
-	return(b->widx + 1) % 16 == b->ridx;
+inline static int buff_full(ring_buffer_t* bptr) {
+	return(bptr->widx + 1) % MAX_BUF_SIZE == bptr->ridx;
 }
 
-inline static int buff_empty(ring_buffer_t* b) {
-	return b->widx == b->ridx;
+inline static int buff_empty(ring_buffer_t* bptr) {
+	return bptr->widx == bptr->ridx;
 }
 
-void __attribute__((interrupt)) _int_mfp_tx(void) {
-	if(!buff_empty(&txbuf))
+void __attribute__((interrupt)) int_mfp_tx(void) {
+	if(!buff_empty(&txbuf)) {
 		buff_pop_nb(&txbuf, &mfp[MFP_UDR]);
+	}
 }
 
-void __attribute__((interrupt)) _int_mfp_rx(void) {
-	if((rxbuf.widx+2)&& 15 == rxbuf.ridx) {
+void __attribute__((interrupt)) int_mfp_rx(void) {
+	if((rxbuf.widx+2) % MAX_BUF_SIZE == rxbuf.ridx) {
 		//disable RTS
 		mfp[MFP_GPDR] |= 0b01000000;
 	}
 	buff_push_nb(&rxbuf, mfp[MFP_UDR]);
 }
 
-void __attribute__((interrupt)) _int_mfp_cts(void) {
+void __attribute__((interrupt)) int_mfp_cts(void) {
 	//disable cts interrupt before changing MFP_AER
 	mfp[MFP_IERA] &= 0b01111111;
 	if(mfp[MFP_AER] & 0b10000000) { //interrupt triggered by rising edge
@@ -103,8 +108,9 @@ void mfp_putc(char byte) {
 	}
 }
 
-char mfp_getc(void) {
-	if(buff_empty(&rxbuf))
+unsigned char mfp_getc(void) {
+	if(buff_empty(&rxbuf)) {
 		mfp[MFP_GPDR] &= 0b10111111;
+	}
 	return buff_pop(&rxbuf);
 }

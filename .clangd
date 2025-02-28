@@ -3,3 +3,5 @@ CompileFlags:
 
 Diagnostics:
     Suppress: anyx86_interrupt_attribute
+    ClangTidy:
+        Add: ['bugprone-*', 'misc-*', 'performance-*', 'readability-*']
