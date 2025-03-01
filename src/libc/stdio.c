@@ -189,7 +189,7 @@ int vfscanf(FILE* file, const char* format, va_list args) {
 	int tmp;
 	while(format[idx] != '\0') {
 		while(isspace(format[idx]) && format[idx] != '\0') { idx++; } //skip whitespace
-		if(format[idx] != '\0') {break;} //dumb guard
+		if(format[idx] == '\0') {break;} //dumb guard
 		if(format[idx] != '%') {
 			if(format[idx] != fgetc(file)) {
 				return retv;

@@ -81,3 +81,6 @@ tags
 #clangd files
 compile_commands.json
 .cache/*
+
+#linux target files
+mm

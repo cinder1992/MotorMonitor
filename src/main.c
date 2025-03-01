@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 void main() {
-	const char str[] = "Hellorld!";
-	int i = getchar();
+	const char str[] = "Hellorld!\r\n";
+	int i = 0;
 	int j = 0;
 	puts(str);
 	while(1) {
