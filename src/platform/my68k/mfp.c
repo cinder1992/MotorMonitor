@@ -14,14 +14,14 @@ typedef struct ring_buffer_s {
 ring_buffer_t txbuf, rxbuf;
 
 inline static void buff_push(ring_buffer_t* bptr, char chr) {
-	while((bptr->widx + 1) % MAX_BUF_SIZE == bptr->ridx){} //Wait for a space in the buffer
+	while((bptr->widx + 1) % MAX_BUF_SIZE == bptr->ridx); //Wait for a space in the buffer
 	bptr->buf[bptr->widx] = chr;
 	bptr->widx = (bptr->widx + 1) % MAX_BUF_SIZE ;
 }
 
 inline static unsigned char buff_pop(ring_buffer_t* bptr) {
 	unsigned char tmp;
-	while(bptr->ridx == bptr->widx){} //wait for a character to arrive
+	while(bptr->ridx == bptr->widx); //wait for a character to arrive
 	tmp = bptr->buf[bptr->ridx];
 	bptr->ridx = (bptr->ridx + 1) % MAX_BUF_SIZE;
 	return tmp;
@@ -60,7 +60,7 @@ void __attribute__((interrupt)) int_mfp_tx(void) {
 }
 
 void __attribute__((interrupt)) int_mfp_rx(void) {
-	if((rxbuf.widx+2) % MAX_BUF_SIZE == rxbuf.ridx) {
+	if(((rxbuf.widx+2) & 15) == rxbuf.ridx) {
 		//disable RTS
 		mfp[MFP_GPDR] |= 0b01000000;
 	}
