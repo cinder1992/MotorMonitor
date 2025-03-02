@@ -71,3 +71,8 @@ int toupper(int chr) {
 	}
 	return chr;
 }
+
+int isblank(int chr) {
+	return 	(chr == '\x20') ||
+			(chr == '\x09');
+}
