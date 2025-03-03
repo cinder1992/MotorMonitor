@@ -5,10 +5,9 @@ AS := as
 LD := gcc
 OBJCOPY := objcopy
 
-PLATSRCS += $(wildcard $(PLATDIR)/*.c)
+SRCS += $(wildcard $(PLATDIR)/*.c)
 ASSRCS += $(wildcard $(PLATDIR)/*.s)
-OBJS += $(patsubst $(PLATDIR)/%.c,%.o,$(PLATSRCS))
-OBJS += $(patsubst $(PLATDIR)/%.s,%.s.o,$(ASSRCS))
+PLATVPATH := $(PLATDIR)
 
 OPTIMISE := 0
 
@@ -17,9 +16,11 @@ CFLAGS := -g -I$(INCDIR) -I$(LIBCINCDIR) -std=gnu99 -O$(OPTIMISE) -Wall -Wextra
 
 PLATFILES := mm *.o *.s.o
 
-.PHONY: platform
+PLATEXT :=
 
-mm: $(OBJS)
-	$(LD) -o $@ $^ $(LDFLAGS)
+.PHONY: platform debug
 
 platform: mm
+
+debug: mm
+	gdb mm

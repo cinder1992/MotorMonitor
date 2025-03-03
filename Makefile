@@ -4,21 +4,26 @@ PLATFORM := my68k
 #basic multi-platform sources and directores
 SRCDIR := src
 INCDIR := include
+PLATDIR := $(SRCDIR)/platform/$(PLATFORM)
 LIBCDIR := $(SRCDIR)/libc
 LIBCINCDIR := $(INCDIR)/libc
-PLATDIR := $(SRCDIR)/platform/$(PLATFORM)
 SRCS := $(wildcard $(SRCDIR)/*.c)
-LIBCSRCS := $(wildcard $(LIBCDIR)/*.c)
-OBJS := $(patsubst $(SRCDIR)/%.c,%.o,$(SRCS))
-OBJS += $(patsubst $(LIBCDIR)/%.c,%.o,$(LIBCSRCS))
 
+include ${LIBCDIR}/libc.mk
 include ${PLATDIR}/platform.mk
 
-VPATH := $(SRCDIR):$(PLATDIR):$(LIBCDIR)
+OBJS := $(patsubst %.c,%.o,$(notdir $(SRCS)))
+OBJS += $(patsubst %.s,%.s.o, $(notdir $(ASSRCS)))
+$(info $(OBJS))
+
+VPATH := $(SRCDIR):$(PLATVPATH):$(LIBCVPATH)
 
 .PHONY: all clean
 
 default: all
+
+mm$(PLATEXT): $(OBJS)
+	$(LD) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)

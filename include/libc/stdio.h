@@ -3,6 +3,7 @@
 
 //both clang and GCC provide these defines to prevent typedef collisions
 //In our case, we're only using GCC, but llvm will hopefully get support for these
+//once m68k support hits mainline
 #define __need_size_t
 #define __need_NULL
 #include <stddef.h>
@@ -20,24 +21,25 @@ typedef int FILE;
 extern int putchar(int);
 extern int getchar(void);
 
-int fputc(int, FILE *);
+extern int fputc(int, FILE *);
 
-int fputs(const char*, FILE*);
-int puts(const char*);
+extern int fputs(const char*, FILE*);
+extern int puts(const char*);
 
 
-int fgetc(FILE*);
+extern int fgetc(FILE*);
+extern char* fgets(char* __restrict, int, FILE* __restrict);
 
-//printf family
-int vfprintf(FILE*, const char* __restrict, __builtin_va_list);
-int vprintf(const char* __restrict, __builtin_va_list);
-int fprintf(FILE*, const char* __restrict, ...);
-int printf(const char* __restrict, ...);
+//fprintf family
+extern int vfprintf(FILE* __restrict, const char* __restrict, __builtin_va_list);
+extern int vprintf(const char* __restrict, __builtin_va_list);
+extern int fprintf(FILE* __restrict, const char* __restrict, ...);
+extern int printf(const char* __restrict, ...);
 
-//scanf family
-int vfscanf(FILE*,const char* __restrict, __builtin_va_list);
-int vscanf(const char* __restrict, __builtin_va_list);
-int fscanf(FILE*, const char* __restrict, ...);
-int scanf(const char* __restrict, ...);
+//fscanf family
+extern int vfscanf(FILE* __restrict,const char* __restrict, __builtin_va_list);
+extern int vscanf(const char* __restrict, __builtin_va_list);
+extern int fscanf(FILE* __restrict, const char* __restrict, ...);
+extern int scanf(const char* __restrict, ...);
 
 #endif //_STDIO_H

@@ -5,10 +5,9 @@ AS := $(TARGET)-as
 LD := $(TARGET)-gcc
 OBJCOPY := $(TARGET)-objcopy
 
-PLATSRCS += $(wildcard $(PLATDIR)/*.c)
+SRCS += $(wildcard $(PLATDIR)/*.c)
 ASSRCS += $(wildcard $(PLATDIR)/*.s)
-OBJS += $(patsubst $(PLATDIR)/%.c,%.o,$(PLATSRCS))
-OBJS += $(patsubst $(PLATDIR)/%.s,%.s.o,$(ASSRCS))
+PLATVPATH := $(PLATDIR)
 
 OPTIMISE := 2
 
@@ -17,10 +16,9 @@ CFLAGS := -I$(INCDIR) -I$(LIBCINCDIR) -march=68010 -std=gnu99 -ffreestanding -O$
 
 PLATFILES := *.bin* *.elf *.o *.s.o
 
-.PHONY: platform
+PLATEXT := .elf
 
-mm.elf: $(OBJS)
-	$(LD) -o $@ $^ $(LDFLAGS)
+.PHONY: platform
 
 mm.bin: mm.elf
 	$(OBJCOPY) -O binary --gap-fill 0x00 --pad-to 0x100000 $< $@

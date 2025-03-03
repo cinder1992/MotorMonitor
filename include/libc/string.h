@@ -7,10 +7,10 @@
 #define __need_NULL
 #include <stddef.h>
 
-void *memcpy(void *, const void *, size_t);
-void *memset(void *, int, size_t);
-void *memmove(void *, const void *, size_t);
-int memcmp(const void *, const void *, size_t);
-size_t strlen(const char*);
+extern void *memcpy(void *, const void *, size_t);
+extern void *memset(void *, int, size_t);
+extern void *memmove(void *, const void *, size_t);
+extern int memcmp(const void *, const void *, size_t);
+extern size_t strlen(const char*);
 
 #endif
