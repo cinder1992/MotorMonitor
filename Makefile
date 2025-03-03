@@ -14,7 +14,6 @@ include ${PLATDIR}/platform.mk
 
 OBJS := $(patsubst %.c,%.o,$(notdir $(SRCS)))
 OBJS += $(patsubst %.s,%.s.o, $(notdir $(ASSRCS)))
-$(info $(OBJS))
 
 VPATH := $(SRCDIR):$(PLATVPATH):$(LIBCVPATH)
 
