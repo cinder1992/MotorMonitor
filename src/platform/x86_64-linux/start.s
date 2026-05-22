@@ -9,8 +9,8 @@
 _start:
 	call main
 	#Returned from main, exit gracefully
-	movq SYS_EXIT, %rax
-	movq EXIT_CODE, %rdi
+	movq $SYS_EXIT, %rax
+	movq $EXIT_CODE, %rdi
 	syscall
 
 
