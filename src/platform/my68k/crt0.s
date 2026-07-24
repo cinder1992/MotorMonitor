@@ -3,7 +3,7 @@
 
 .section .text
 
-.extern main, mfp_init
+.extern main, mfp_init, _init
 
 .globl _start
 
@@ -34,7 +34,7 @@ _start:
 	clr.b %a0@+
 	dbra %d1, 0b
 	andi #0xF8FF, %SR
-	jsr mfp_init
+	jsr _init
 	jsr main
 	/* main should never return, but if it does... */
 	illegal

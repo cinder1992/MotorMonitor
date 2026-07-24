@@ -81,7 +81,7 @@ void __attribute__((interrupt)) int_mfp_cts(void) {
 	mfp[MFP_IERA] |= 0b10000000; //enable CTS interrupt
 }
 
-void mfp_init(void) {
+void __attribute__((constructor(100))) mfp_init(void) {
 	//setup GPIO for RTS/CTS
 
 	mfp[MFP_DDR] = 0x40; //GPIO6 is output, all others input

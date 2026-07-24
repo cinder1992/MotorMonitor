@@ -20,11 +20,11 @@ long strtol(const char* str, char** str_end, int base) {
 		if(isalpha(**str_end)) {
 			//validate range
 			if(toupper(**str_end)-'A' > base-1) break;
-			retval *= base;
+			retval *= (long)base;
 			retval += toupper(**str_end) - 'A' + 10; 
 			(*str_end)++;
 		} else { //isdigit
-			 retval *= base;
+			 retval *= (long)base;
 			 retval += **str_end - '0';
 			 (*str_end)++;
 		}

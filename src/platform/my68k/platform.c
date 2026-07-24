@@ -76,11 +76,14 @@ int _platform_write(int fdes,const unsigned char* buf,size_t count) {
 	return (int)i;
 }
 int _platform_close(int fdes) {
+	(void)fdes; //Silence, warning
 	return 0;
 }
 int _platform_flush(int fdes) {
+	(void)fdes; //Silence, warning
 	return 0;
 }
 off_t _platform_seek(int fdes,off_t offs, unsigned int whence) {
+	(void)fdes; (void)offs; (void)whence; //Silence, warnings
 	return 0;
 }
