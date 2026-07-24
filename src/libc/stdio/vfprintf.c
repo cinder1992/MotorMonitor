@@ -38,7 +38,7 @@ static int itoa(int n, int base, char* s) {
 	return i;
 }
 
-static inline int parse_and_emit(FILE* file, const char* format, int* idx, va_list args) {
+static inline int parse_and_emit(FILE* file, const char* format, int* idx, va_list* args) {
 	int retv = 0;
 	int tmp;
 	char s[32+2];
@@ -47,17 +47,17 @@ static inline int parse_and_emit(FILE* file, const char* format, int* idx, va_li
 			tmp = fputc('%', file);
 			break;
 		case 'c':
-			tmp = fputc(va_arg(args, int), file);
+			tmp = fputc(va_arg(*args, int), file);
 			break;
 		case 's':
-			tmp = fputs(va_arg(args, char*), file);
+			tmp = fputs(va_arg(*args, char*), file);
 			break;
 		case 'x':
-			itoa(va_arg(args, int), 16, s);
+			itoa(va_arg(*args, int), 16, s);
 			tmp = fputs(s, file);
 			break;
 		case 'd':
-			itoa(va_arg(args, int), 10, s);
+			itoa(va_arg(*args, int), 10, s);
 			tmp = fputs(s, file);
 			break;
 		default:
@@ -75,7 +75,7 @@ int vfprintf(FILE* file, const char* format, va_list args) {
 	while(format[idx] != '\0') {
 		if(format[idx] == '%') {
 			idx++;
-			int temp = parse_and_emit(file, format, &idx, args);
+			int temp = parse_and_emit(file, format, &idx, &args);
 			if(temp < 0) {
 				return temp;
 			}
