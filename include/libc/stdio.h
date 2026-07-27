@@ -66,13 +66,13 @@ __attribute__((__visibility__("hidden"))) extern FILE _platform_stderr_file;
 
 //getc family
 extern int fgetc(FILE*);
-#define getc() fgetc(stdin)
+#define getc(Z) fgetc(Z)
 extern int getchar(void);
 extern int ungetc(int, FILE*);
 
 //putc family
 extern int fputc(int, FILE *);
-#define putc(X) fputc(stdout, X)
+#define putc(X,Y) fputc(X,Y)
 extern int putchar(int);
 
 //fgets family
